@@ -13,5 +13,5 @@ class ProjectService:
     def get_project_by_id(self, project_id: int) -> dict | None:
         project = self.project_repo.get_project_by_id(project_id)
         if not project:
-            return None
+            raise KeyError(f"Project with ID {project_id} not found")
         return project_schema.dump(project)

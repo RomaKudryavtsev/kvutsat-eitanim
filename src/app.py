@@ -5,13 +5,20 @@ from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from sqlalchemy.event import listens_for
 from dotenv import load_dotenv
-from .admin import MyAdminIndexView, ArticleAdmin, SiteSettingsAdmin
-from .controllers import article_bp, site_settings_bp, uploads_bp
-from .models import db_conn, Article, SiteSettings, User
+from .admin import (
+    MyAdminIndexView,
+    ImageAdmin,
+    LeadAdmin,
+    ProjectAdmin,
+    SiteSettingsAdmin,
+)
+from .controllers import lead_bp, project_bp, site_settings_bp, static_bp, uploads_bp
+from .models import db_conn, Image, Lead, Project, SiteSettings, User
 from .schemas import ma
-from .services import ArticleService, SiteSettingsService, UserService
-from .repos import ArticleRepo, SiteSettingsRepo, UserRepo
+from .services import LeadService, ProjectService, SiteSettingsService, UserService
+from .repos import LeadRepo, ProjectRepo, SiteSettingsRepo, UserRepo
 
 load_dotenv()
 
@@ -24,7 +31,7 @@ app.config["ADMIN_USERNAME"] = os.getenv("ADMIN_USERNAME")
 app.config["ADMIN_PASSWORD"] = os.getenv("ADMIN_PASSWORD")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{Path(__file__).parent / 'mvc.db' }"
 app.config["UPLOAD_FOLDER"] = Path(__file__).parent / "static" / "uploads"
-app.config["FLASK_ADMIN_SWATCH"] = "united"
+app.config["FLASK_ADMIN_SWATCH"] = "solar"
 
 # CORS settings
 RESOURCES = {
@@ -41,8 +48,10 @@ CORS(app, resources=RESOURCES, supports_credentials=True)
 # Application settings
 app.static_folder = "static"
 app.secret_key = app.config["CSRF_SECRET"]
-app.register_blueprint(article_bp, url_prefix="/api/articles")
-app.register_blueprint(site_settings_bp, url_prefix="/api/site-settings")
+app.register_blueprint(lead_bp, url_prefix="/api/leads")
+app.register_blueprint(project_bp, url_prefix="/api/projects")
+app.register_blueprint(site_settings_bp, url_prefix="/api/settings")
+app.register_blueprint(static_bp, url_prefix="/api/static")
 app.register_blueprint(uploads_bp, url_prefix="/api/uploads")
 
 # Flask-SQLAlchemy initialization
@@ -67,15 +76,18 @@ def load_user(user_id):
 # Application context
 with app.app_context():
     db_conn.create_all()
-    (article_repo, site_settings_repo, user_repo) = (
-        ArticleRepo(),
+    (lead_repo, project_repo, site_settings_repo, user_repo) = (
+        LeadRepo(),
+        ProjectRepo(),
         SiteSettingsRepo(),
         UserRepo(),
     )
-    article_service = ArticleService(article_repo)
+    lead_service = LeadService(lead_repo)
+    project_service = ProjectService(project_repo)
     site_settings_service = SiteSettingsService(site_settings_repo)
     user_service = UserService(user_repo)
-    app.article_service = article_service
+    app.lead_service = lead_service
+    app.project_service = project_service
     app.site_settings_service = site_settings_service
     app.user_service = user_service
     admin_username = app.config["ADMIN_USERNAME"]
@@ -87,13 +99,25 @@ with app.app_context():
 # Flask-Admin initialization
 admin = Admin(
     app,
-    name="Flask MVC",
+    name="Kvutsat Eitanim Admin",
     index_view=MyAdminIndexView(),
     base_template="_master.html",
     template_mode="bootstrap4",
 )
-admin.add_view(ArticleAdmin(Article, db_conn.session))
+admin.add_view(ImageAdmin(Image, db_conn.session))
+admin.add_view(LeadAdmin(Lead, db_conn.session))
+admin.add_view(ProjectAdmin(Project, db_conn.session))
 admin.add_view(SiteSettingsAdmin(SiteSettings, db_conn.session))
+
+
+# SQLAlchemy event listeners
+@listens_for(Image, "after_delete")
+def del_resource(mapper, connection, target):
+    if target.filename:
+        path = Path(app.config["UPLOAD_FOLDER"]) / target.filename
+        if path.exists():
+            path.unlink()
+
 
 if __name__ == "__main__":
     app.run(debug=app.config["DEBUG"])

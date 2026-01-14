@@ -1,5 +1,13 @@
 from .index_view import MyAdminIndexView
-from .article import ArticleAdmin
+from .image import ImageAdmin
+from .lead import LeadAdmin
+from .project import ProjectAdmin
 from .site_settings import SiteSettingsAdmin
 
-__all__ = ("MyAdminIndexView", "ArticleAdmin", "SiteSettingsAdmin")
+__all__ = (
+    "MyAdminIndexView",
+    "ImageAdmin",
+    "LeadAdmin",
+    "ProjectAdmin",
+    "SiteSettingsAdmin",
+)

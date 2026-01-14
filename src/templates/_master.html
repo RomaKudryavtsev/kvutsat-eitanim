@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 
 {% block head_meta %}
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" href="{{ url_for('static_api.get_favicon') }}">
 <meta name="robots" content="noindex, nofollow">
 {% endblock %}
 
