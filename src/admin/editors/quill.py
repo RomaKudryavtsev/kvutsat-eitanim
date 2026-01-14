@@ -15,9 +15,19 @@ class QuillAreaWidget(TextArea):
         <style>
             .quill-editor-container {{
                 min-height: 300px;
+                direction: rtl;
+                background-color: white;
             }}
             .quill-editor-container .ql-editor {{
                 min-height: 250px;
+                text-align: right;
+                direction: rtl;
+                background-color: white;
+            }}
+            .quill-editor-container .ql-editor.ql-blank::before {{
+                text-align: right;
+                right: 15px;
+                left: auto;
             }}
         </style>
         <script>
