@@ -1,0 +1,13 @@
+(.venv) root@Ubuntu-2204-jammy-amd64-base /etc/systemd/system # cat api.service
+[Unit]
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/flask-mvc-template
+ExecStart=/srv/flask-mvc-template/.venv/bin/waitress-serve src:app
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+.venv
+.env
+mvc.db
+.vscode
+__pycache__
+/src/static/uploads/*
