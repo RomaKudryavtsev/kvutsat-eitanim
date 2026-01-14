@@ -1,5 +1,5 @@
-from .article import ArticleRepo
+from .project import ProjectRepo
 from .site_settings import SiteSettingsRepo
 from .user import UserRepo
 
-__all__ = ("ArticleRepo", "SiteSettingsRepo", "UserRepo")
+__all__ = ("ProjectRepo", "SiteSettingsRepo", "UserRepo")
