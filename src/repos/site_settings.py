@@ -4,6 +4,6 @@ from ..models import db_conn, SiteSettings
 
 class SiteSettingsRepo:
     def get_site_settings(self) -> SiteSettings | None:
-        statement = select(SiteSettings)
+        statement = select(SiteSettings).limit(1)
         result = db_conn.session.execute(statement).scalar()
         return result

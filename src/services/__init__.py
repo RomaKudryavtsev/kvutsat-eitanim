@@ -1,5 +1,5 @@
-from .article import ArticleService
+from .project import ProjectService
 from .site_settings import SiteSettingsService
 from .user import UserService
 
-__all__ = ("ArticleService", "SiteSettingsService", "UserService")
+__all__ = ("ProjectService", "SiteSettingsService", "UserService")

@@ -10,5 +10,5 @@ class SiteSettingsService:
     def get_site_settings(self) -> SiteSettings | None:
         site_settings = self.site_settings_repo.get_site_settings()
         if not site_settings:
-            raise KeyError("Site settings not found")
+            return None
         return site_settings_schema.dump(site_settings)
