@@ -14,6 +14,7 @@ from .admin import (
     ProjectAdmin,
     SiteSettingsAdmin,
 )
+from .clients import NextRevalidateClient
 from .controllers import lead_bp, project_bp, site_settings_bp, static_bp, uploads_bp
 from .models import db_conn, Image, Lead, Project, SiteSettings, User
 from .schemas import ma
@@ -32,6 +33,7 @@ app.config["ADMIN_PASSWORD"] = os.getenv("ADMIN_PASSWORD")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{Path(__file__).parent / 'mvc.db' }"
 app.config["UPLOAD_FOLDER"] = Path(__file__).parent / "static" / "uploads"
 app.config["FLASK_ADMIN_SWATCH"] = "solar"
+app.config["FRONTEND_URL"] = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # CORS settings
 RESOURCES = {
@@ -76,6 +78,7 @@ def load_user(user_id):
 # Application context
 with app.app_context():
     db_conn.create_all()
+    next_client = NextRevalidateClient(app.config["FRONTEND_URL"])
     (lead_repo, project_repo, site_settings_repo, user_repo) = (
         LeadRepo(),
         ProjectRepo(),
@@ -86,6 +89,7 @@ with app.app_context():
     project_service = ProjectService(project_repo)
     site_settings_service = SiteSettingsService(site_settings_repo)
     user_service = UserService(user_repo)
+    app.next_client = next_client
     app.lead_service = lead_service
     app.project_service = project_service
     app.site_settings_service = site_settings_service

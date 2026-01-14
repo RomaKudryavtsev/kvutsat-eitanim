@@ -39,7 +39,7 @@ class QuillAreaWidget(TextArea):
                         ['clean']
                     ]
                 }},
-                placeholder: 'Добавьте описание...',
+                placeholder: 'כתבו כאן...',
                 bounds: '#{field.id}_quill'
             }});
 
@@ -51,6 +51,15 @@ class QuillAreaWidget(TextArea):
                 textarea.value = quill.root.innerHTML;
                 textarea.dispatchEvent(new Event('input', {{ bubbles: true }}));
             }});
+
+            // Set default direction to RTL (Hebrew content)
+            container.style.direction = 'rtl';
+            quill.root.style.direction = 'rtl';
+            quill.root.setAttribute('dir', 'rtl');
+            var range = quill.getSelection();
+            if (range) {{
+                quill.format('direction', 'rtl');
+            }}
         }});
         </script>
         """

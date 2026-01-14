@@ -6,7 +6,7 @@ from .editors import QuillTextAreaField
 
 class ProjectAdmin(SecureModelView):
     form_columns = ["name", "description", "status", "location", "images"]
-    column_list = ["id", *form_columns]
+    column_list = ["id", "created_at", "name", "status", "location"]
 
     form_overrides = {
         "description": QuillTextAreaField,
