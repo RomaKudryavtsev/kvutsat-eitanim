@@ -1,14 +1,8 @@
 from .base import ma
-from .article import ArticleSchema
+from .project import ProjectSchema
 from .site_settings import SiteSettingsSchema
 
+project_schema = ProjectSchema()
+multi_project_schema = ProjectSchema(many=True)
 site_settings_schema = SiteSettingsSchema()
-single_article_schema = ArticleSchema()
-multiple_articles_schema = ArticleSchema(many=True)
-
-__all__ = (
-    "ma",
-    "site_settings_schema",
-    "single_article_schema",
-    "multiple_articles_schema",
-)
+__all__ = ("ma", "site_settings_schema")
