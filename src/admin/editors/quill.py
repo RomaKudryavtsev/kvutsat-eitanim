@@ -12,33 +12,35 @@ class QuillAreaWidget(TextArea):
         <!-- Quill CDN -->
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/quill-resize-module@2.0.4/dist/resize.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/quill-resize-module@2.0.4/dist/resize.min.css" rel="stylesheet">
+        <style>
+            .quill-editor-container {{
+                min-height: 300px;
+            }}
+            .quill-editor-container .ql-editor {{
+                min-height: 250px;
+            }}
+        </style>
         <script>
         document.addEventListener("DOMContentLoaded", function() {{
             var container = document.createElement('div');
             container.id = '{field.id}_quill';
-            container.style.direction = 'rtl';
+            container.className = 'quill-editor-container';
             var textarea = document.querySelector("#{field.id}");
             textarea.style.display = 'none';
             textarea.parentNode.insertBefore(container, textarea.nextSibling);
-            
+
             var quill = new Quill('#{field.id}_quill', {{
                 theme: 'snow',
                 modules: {{
                     toolbar: [
                         ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote', 'code-block'],
-                        ['link', 'image', 'video'],
-                        [{{ 'list': 'ordered' }}, {{ 'list': 'bullet' }}],
-                        [{{ 'direction': 'rtl' }}, {{ 'align': [] }}],
+                        ['link'],
+                        [{{ 'list': 'bullet' }}],
                         ['clean']
-                    ],
-                    resize: {{ modules: ['Resize', 'DisplaySize', 'Toolbar'] }}
+                    ]
                 }},
-                placeholder: 'כתוב כאן...',
-                bounds: '#{field.id}_quill',
-                direction: 'rtl'
+                placeholder: 'Добавьте описание...',
+                bounds: '#{field.id}_quill'
             }});
 
             // Set initial value
@@ -48,28 +50,6 @@ class QuillAreaWidget(TextArea):
             quill.on('text-change', function() {{
                 textarea.value = quill.root.innerHTML;
                 textarea.dispatchEvent(new Event('input', {{ bubbles: true }}));
-            }});
-
-            // Optional: Custom image upload handler
-            quill.getModule('toolbar').addHandler('image', function() {{
-                var input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
-                input.click();
-                input.onchange = function() {{
-                    var file = input.files[0];
-                    var formData = new FormData();
-                    formData.append('upload', file);
-                    fetch('/api/uploads/img', {{
-                        method: 'POST',
-                        body: formData
-                    }})
-                    .then(response => response.json())
-                    .then(result => {{
-                        var range = quill.getSelection();
-                        quill.insertEmbed(range.index, 'image', result.url);
-                    }});
-                }};
             }});
         }});
         </script>
